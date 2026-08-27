@@ -1,0 +1,24 @@
+[
+  {
+    "id": "topo-catalogo",
+    "intervalo": 4500,
+    "imagens": [
+      {
+        "src": "imagens/banner1.png",
+        "alt": "Promoção de fantasias — confira as novidades"
+      },
+      {
+        "src": "imagens/banner1.png",
+        "alt": "Máscaras e acessórios para toda a festa"
+      },
+      {
+        "src": "imagens/banner1.png",
+        "alt": "Peça pelo WhatsApp — frete a combinar"
+      },
+      {
+        "src": "imagens/banner1.png",
+        "alt": "Novidades chegando toda semana"
+      }
+    ]
+  }
+]

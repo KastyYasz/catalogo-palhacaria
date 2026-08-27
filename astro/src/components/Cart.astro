@@ -1,0 +1,39 @@
+---
+// Painel lateral do carrinho + overlay. Conteúdo montado no cliente.
+---
+
+<div id="overlay" role="presentation" aria-hidden="true"></div>
+
+<aside
+  id="painel-carrinho"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Carrinho de compras"
+>
+  <div class="carrinho-header">
+    <h2>🛒 Meu Carrinho</h2>
+    <button id="btn-fechar-carrinho" aria-label="Fechar carrinho">✕</button>
+  </div>
+  <div id="lista-carrinho" role="list" aria-label="Itens no carrinho"></div>
+  <div class="carrinho-footer">
+    <div class="campo-cep">
+      <label for="input-cep">📍 Seu CEP (para calcular frete)</label>
+      <input
+        type="text"
+        id="input-cep"
+        placeholder="00000-000"
+        maxlength="9"
+        inputmode="numeric"
+        aria-label="CEP para entrega"
+      />
+    </div>
+    <div class="total-geral" aria-live="polite">
+      <span>Total do pedido:</span>
+      <strong id="valor-total">R$ 0,00</strong>
+    </div>
+    <button id="btn-whatsapp" disabled aria-label="Finalizar pedido pelo WhatsApp">
+      <span class="wpp-icon">💬</span>
+      Finalizar pelo WhatsApp
+    </button>
+  </div>
+</aside>

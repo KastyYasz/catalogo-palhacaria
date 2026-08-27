@@ -1,0 +1,32 @@
+---
+// Carrossel de banner. Os slides vêm do banners.json (build time).
+// A troca automática é feita pelo script cliente (carrossel.js).
+import { banners } from '../data/produtos.ts';
+
+const bannerId = 'topo-catalogo';
+const dados = banners.find((b) => b.id === bannerId) || banners[0];
+---
+
+<section
+  id="banner-topo"
+  class="banner-carousel"
+  aria-label="Destaques e promoções"
+  data-banner-id={bannerId}
+>
+  <div class="banner-slides">
+    {
+      dados.imagens.map((img, i) => (
+        <div class={`banner-slide${i === 0 ? ' ativo' : ''}`}>
+          <img
+            src={img.src}
+            alt={img.alt || ''}
+            loading={i === 0 ? 'eager' : 'lazy'}
+          />
+        </div>
+      ))
+    }
+  </div>
+  <button class="banner-seta banner-seta-prev" aria-label="Imagem anterior">‹</button>
+  <button class="banner-seta banner-seta-next" aria-label="Próxima imagem">›</button>
+  <div class="banner-indicadores" role="tablist" aria-label="Selecionar imagem do banner"></div>
+</section>

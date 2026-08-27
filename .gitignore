@@ -1,0 +1,17 @@
+# Node / NPM
+node_modules/
+npm-debug.log*
+
+# Astro (build e cache)
+astro/dist/
+astro/.astro/
+astro/.astro_types/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Ambiente local
+*.local
+.env
+.env.*

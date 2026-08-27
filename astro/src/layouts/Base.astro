@@ -1,0 +1,26 @@
+---
+// Layout base: HTML completo + style.css aprovado (azul + badges coloridas).
+const { titulo = 'Palhaçaria & Cia — Catálogo Online' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{titulo}</title>
+    <meta
+      name="description"
+      content="Catálogo de fantasias, máscaras e acessórios da Palhaçaria & Cia. Escolha seus produtos e finalize pelo WhatsApp!"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤡</text></svg>"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <slot />
+    <script is:inline src="/app.js"></script>
+  </body>
+</html>

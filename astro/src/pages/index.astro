@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Banner from '../components/Banner.astro';
+import Filters from '../components/Filters.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Cart from '../components/Cart.astro';
+import ProductModal from '../components/ProductModal.astro';
+import Footer from '../components/Footer.astro';
+import { produtos } from '../data/produtos.ts';
+---
+
+<Base>
+  <Header />
+  <Hero />
+
+  <main class="container">
+    <Banner />
+
+    <Filters />
+
+    <p id="info-resultados" aria-live="polite"></p>
+
+    <section id="grade-produtos" aria-label="Lista de produtos">
+      {produtos.map((p) => <ProductCard produto={p} />)}
+    </section>
+  </main>
+
+  <Cart />
+  <ProductModal />
+  <div id="toast" role="status" aria-live="polite"></div>
+  <Footer />
+
+  <!-- Dados injetados em build time (sem fetch no navegador) -->
+  <script is:inline define:vars={{ produtos }}>
+    window.__PRODUTOS__ = produtos;
+  </script>
+</Base>

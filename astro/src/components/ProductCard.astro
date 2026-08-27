@@ -1,0 +1,38 @@
+---
+// Card de produto — HTML estático puro. Botão dispara o modal/add no cliente.
+import { type Produto, normalizarCss, capitalizar, formatarPreco } from '../data/produtos.ts';
+
+const { produto } = Astro.props as { produto: Produto };
+const cls = normalizarCss(produto.categoria);
+const temVariacoes = (produto.tamanhos?.length ?? 0) > 0 || (produto.cores?.length ?? 0) > 0;
+const preco = formatarPreco(produto.preco);
+---
+
+<article class="card-produto">
+  <div class="imagem-wrapper">
+    <img
+      src={produto.imagem}
+      alt={produto.nome}
+      loading="lazy"
+      width="400"
+      height="400"
+      onerror="this.src='https://via.placeholder.com/400x400/1565C0/FFFFFF?text=Sem+Imagem'"
+    />
+  </div>
+  <span class={`badge-categoria ${cls}`}>{capitalizar(produto.categoria)}</span>
+  <div class="card-corpo">
+    <h3>{produto.nome}</h3>
+    <div class="card-meta">
+      <span class="tag">{capitalizar(produto.subcategoria)}</span>
+      <span class="tag">{capitalizar(produto.tipo)}</span>
+    </div>
+    <div class="card-preco"><small>R$</small> {preco}</div>
+  </div>
+  <button
+    class={`btn-adicionar${temVariacoes ? ' tem-opcoes' : ''}`}
+    data-id={produto.id}
+    type="button"
+  >
+    🛒 {temVariacoes ? 'Escolher Opções' : 'Adicionar ao Carrinho'}
+  </button>
+</article>

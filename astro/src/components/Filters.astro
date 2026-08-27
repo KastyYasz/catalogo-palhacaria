@@ -1,0 +1,31 @@
+---
+// Barra de filtros (categoria / subcategoria / tipo).
+// Os <select> são populados no cliente a partir dos produtos.
+---
+
+<section class="filters-section" aria-label="Filtros de produtos">
+  <h2>🔍 Filtrar produtos</h2>
+  <div class="filters-grid">
+    <div class="filter-group">
+      <label for="filtro-categoria">Categoria</label>
+      <select id="filtro-categoria" aria-label="Filtrar por categoria">
+        <option value="">Todas as categorias</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="filtro-subcategoria">Subcategoria</label>
+      <select id="filtro-subcategoria" aria-label="Filtrar por subcategoria">
+        <option value="">Todas as subcategorias</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="filtro-tipo">Tipo</label>
+      <select id="filtro-tipo" aria-label="Filtrar por tipo">
+        <option value="">Todos os tipos</option>
+      </select>
+    </div>
+    <button id="btn-limpar-filtros" title="Remover todos os filtros">
+      ✖ Limpar filtros
+    </button>
+  </div>
+</section>

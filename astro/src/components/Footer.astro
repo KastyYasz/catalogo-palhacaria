@@ -1,0 +1,107 @@
+---
+// Footer: faixa de atendimento + colunas + lojas externas + base.
+import { lojas } from '../data/produtos.ts';
+
+const ano = new Date().getFullYear();
+---
+
+<footer>
+  <div class="rodape-faixa">
+    <a class="faixa-item" href="https://wa.me/551636336445" target="_blank" rel="noopener">
+      <span class="faixa-icone">💬</span>
+      <span class="faixa-texto">
+        <strong>Atendimento por WhatsApp</strong>
+        <small>Seg a Sex, 8h às 18h Sab 9h às 14h (16)-3633-6445</small>
+      </span>
+    </a>
+    <a class="faixa-item" href="#grade-produtos">
+      <span class="faixa-icone">🚚</span>
+      <span class="faixa-texto">
+        <strong>Frete para todo o Brasil</strong>
+        <small>Calculado pelo CEP no carrinho</small>
+      </span>
+    </a>
+    <a
+      class="faixa-item"
+      href="https://lista.mercadolivre.com.br/_CustId_189210597"
+      target="_blank"
+      rel="noopener"
+    >
+      <span class="faixa-icone">🛡️</span>
+      <span class="faixa-texto">
+        <strong>Sua compra protegida</strong>
+        <small>Também vendemos nos grandes marketplaces</small>
+      </span>
+    </a>
+  </div>
+
+  <div class="rodape-conteudo">
+    <div class="rodape-col rodape-marca">
+      <p class="rodape-nome">Palhaçaria &amp; Cia</p>
+      <p class="rodape-slogan">Fantasias, Máscaras e Acessórios</p>
+      <div class="rodape-redes">
+        <a href="https://www.instagram.com/palhacariaecia" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://wa.me/551636336445" target="_blank" rel="noopener" aria-label="WhatsApp"> WhatsApp</a>
+        <a href="mailto:palhacariaecia@hotmail.com" aria-label="E-mail"> E-mail</a>
+      </div>
+    </div>
+
+    <nav class="rodape-col rodape-categorias" aria-label="Categorias de produtos">
+      <p class="rodape-secao-titulo">Categorias</p>
+      <ul class="rodape-links" id="rodape-links-categorias">
+        <li><a href="#" data-filtro-tipo="acessório">Acessórios</a></li>
+        <li><a href="#" data-filtro-tipo="conjunto">Fantasias completas</a></li>
+        <li><a href="#" data-filtro-cat="máscara" data-filtro-sub="fofão">Máscaras de Fofão</a></li>
+        <li><a href="#" data-filtro-cat="fantasia" data-filtro-sub="palhaço">Fantasias de Palhaço</a></li>
+        <li><a href="#" data-filtro-cat="fantasia" data-filtro-sub="fofão">Fantasias de Fofão</a></li>
+        <li><a href="#" data-limpar-filtros="1">Ver tudo</a></li>
+      </ul>
+    </nav>
+
+    <nav class="rodape-col rodape-institucional" aria-label="Institucional">
+      <p class="rodape-secao-titulo">Institucional</p>
+      <ul class="rodape-links">
+        <li><a href="#banner-topo">Home</a></li>
+        <li><a href="#grade-produtos">Produtos</a></li>
+        <li><a href="#" data-abrir-carrinho="1">Meu carrinho</a></li>
+        <li><a href="https://lista.mercadolivre.com.br/_CustId_189210597" target="_blank" rel="noopener">Loja no Mercado Livre</a></li>
+        <li><a href="https://shopee.com.br/shop/418327900/" target="_blank" rel="noopener">Loja na Shopee</a></li>
+      </ul>
+    </nav>
+
+    <div class="rodape-col rodape-atendimento">
+      <p class="rodape-secao-titulo">Atendimento</p>
+      <ul class="rodape-links">
+        <li><a href="https://wa.me/551636336445" target="_blank" rel="noopener">(16) 3633-6445</a></li>
+        <li><a href="mailto:palhacariaecia@hotmail.com">palhacariaecia@hotmail.com</a></li>
+        <li>Seg a Sex, 9h às 18h Sab 9h às 14h</li>
+        <li>Ribeirão Preto / SP e região</li>
+        <li>Pix, cartão e boleto via marketplaces</li>
+      </ul>
+    </div>
+
+    <div class="rodape-col rodape-compre">
+      <p class="rodape-secao-titulo">Compre também em:</p>
+      <div class="rodape-lojas-cards" id="rodape-lojas-cards">
+        {
+          lojas.map((l) => (
+            <a
+              class="loja-card"
+              href={encodeURI(l.url)}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={l.nome}
+            >
+              <img class="loja-icon" src={l.icon} alt={l.nome} style={`height: ${l.height}`} />
+              <span>{l.nome}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="rodape-base">
+    <span>© {ano} Palhaçaria &amp; Cia — Todos os direitos reservados · CNPJ 15.809.250/0001-44</span>
+  </div>
+</footer>
