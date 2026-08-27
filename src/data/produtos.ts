@@ -1,10 +1,10 @@
-// Camada de dados: lê os JSON do catálogo real em BUILD TIME, com tipagem.
+// Camada de dados: lê os JSON do catálogo em BUILD TIME, com tipagem.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
+// Os JSONs ficam nesta mesma pasta (src/data), tornando o projeto autocontido.
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const raiz = resolve(__dirname, '../../..'); // pasta catalogo/
 
 export interface Cor {
   nome: string;
@@ -43,11 +43,11 @@ export interface Banner {
 }
 
 export const produtos: Produto[] = JSON.parse(
-  readFileSync(resolve(raiz, 'produtos.json'), 'utf-8')
+  readFileSync(resolve(__dirname, 'produtos.json'), 'utf-8')
 );
 
 export const banners: Banner[] = JSON.parse(
-  readFileSync(resolve(raiz, 'banners.json'), 'utf-8')
+  readFileSync(resolve(__dirname, 'banners.json'), 'utf-8')
 );
 
 // Lojas externas (mantém os links reais do rodapé).
