@@ -2,7 +2,9 @@
 
 Catálogo online de **fantasias, máscaras e acessórios** da loja Palhaçaria & Cia. O cliente navega pelos produtos, monta o carrinho e finaliza o pedido diretamente pelo **WhatsApp**.
 
-> 🎯 **Objetivo:** ser um catálogo leve, rápido e sem backend — o "carrinho" é apenas um agrupador que gera a mensagem do pedido, e a finalização acontece no WhatsApp ou nos marketplaces.
+> 🎯 **Objetivo:** um catálogo leve, rápido e sem backend — o "carrinho" é apenas um agrupador que gera a mensagem do pedido, e a finalização acontece no WhatsApp ou nos marketplaces.
+
+Construído com **[Astro](https://astro.build)**: o HTML é gerado em *build time*, os dados são injetados direto na página e a interação (carrinho, filtros, modal) roda em JavaScript puro no navegador — sem API nem banco de dados.
 
 ---
 
@@ -19,41 +21,44 @@ Catálogo online de **fantasias, máscaras e acessórios** da loja Palhaçaria &
 - **Notificações (toast)** — feedback visual ao adicionar produtos ao carrinho.
 - **Links para marketplaces** — Mercado Livre, Magalu e Shopee no rodapé.
 - **Rodapé completo** — atendimento, redes sociais, categorias (que aplicam filtros) e dados institucionais (CNPJ).
-- **Responsivo e acessível** — se adapta a celulares/tablets, com `aria-label`s, estados de foco e suporte a `prefers-reduced-motion`.
+- **Responsivo e acessível** — se adapta a celulares/tablets, com `aria-label`s, estados de foco, `escapeHtml` (anti-XSS) e suporte a `prefers-reduced-motion`.
 
 ---
 
 ## 🧱 Estrutura do projeto
 
-O projeto tem **duas pegadas** dentro da mesma pasta: uma versão **estática** (HTML puro, pronta para abrir direto) e uma **reconstrução em Astro** (para build estático otimizado).
-
 ```
 catalogo/
-├── index.html          # Versão estática — página principal (HTML puro)
-├── style.css           # Estilos (identidade visual da loja)
-├── script.js           # Lógica da versão estática (fetch do JSON no navegador)
-├── produtos.json       # Dados dos produtos (fonte de verdade)
-├── banners.json        # Slides do banner/carrossel
-├── imagens/            # Imagens de produtos, banners e logos
+├── astro.config.mjs       # Configuração do Astro
+├── package.json           # Dependências (astro) e scripts
+├── package-lock.json
 │
-└── astro/              # Versão em Astro (build estático)
-    ├── astro.config.mjs
-    ├── package.json
-    ├── public/
-    │   ├── style.css        # Mesma folha de estilos
-    │   ├── app.js           # Lógica portada (dados injetados em build time)
-    │   └── imagens/         # Cópias das imagens
-    └── src/
-        ├── data/produtos.ts       # Camada de dados tipada (lê os JSON em build time)
-        ├── layouts/Base.astro     # Layout HTML base
-        ├── components/            # Header, Hero, Banner, Filters, ProductCard,
-        │                          # Cart, ProductModal, Footer
-        └── pages/index.astro      # Página principal
+├── public/                # Arquivos estáticos servidos como estão
+│   ├── style.css          # Folha de estilos (identidade visual da loja)
+│   ├── app.js             # Lógica de interação (filtros, carrinho, modal...)
+│   └── imagens/           # Imagens de produtos, banners e logos
+│
+└── src/
+    ├── data/
+    │   ├── produtos.json  # Dados dos produtos (fonte de verdade)
+    │   ├── banners.json   # Slides do carrossel de banner
+    │   └── produtos.ts    # Camada de dados tipada (lê os JSON em build time)
+    ├── layouts/
+    │   └── Base.astro     # Layout HTML base (head, meta, fonts)
+    ├── components/
+    │   ├── Header.astro
+    │   ├── Hero.astro
+    │   ├── Banner.astro
+    │   ├── Filters.astro
+    │   ├── ProductCard.astro
+    │   ├── Cart.astro
+    │   ├── ProductModal.astro
+    │   └── Footer.astro
+    └── pages/
+        └── index.astro    # Página principal
 ```
 
-> 💡 **As duas versões são funcionalmente equivalentes.** A diferença está em *como* os dados chegam ao navegador:
-> - **Estática:** o `script.js` faz `fetch('produtos.json')` em tempo de execução.
-> - **Astro:** o `produtos.ts` lê os JSON em **build time** e injeta via `window.__PRODUTOS__` — sem fetch no navegador e com `escapeHtml` para proteção contra XSS.
+> 💡 **Como os dados chegam ao navegador:** o `src/data/produtos.ts` lê os JSONs em **build time** e a página injeta tudo via `window.__PRODUTOS__`. Não há `fetch` em tempo de execução — o HTML já sai pronto, o que melhora o carregamento e o SEO.
 
 ---
 
@@ -61,12 +66,12 @@ catalogo/
 
 | Camada | Tecnologia |
 |--------|------------|
-| **Linguagens** | HTML5, CSS3, JavaScript (ES6+) |
+| **Framework** | [Astro](https://astro.build) v4 (geração de site estático) |
+| **Linguagens** | HTML5, CSS3, JavaScript (ES6+), TypeScript (camada de dados) |
 | **Estilização** | CSS custom properties (variáveis), Flexbox, Grid, design responsivo (media queries), `prefers-reduced-motion` |
 | **Fontes** | Google Fonts — *Baloo 2* (display) + *Nunito* (corpo) |
-| **Dados** | JSON (`produtos.json`, `banners.json`) |
+| **Dados** | JSON (`produtos.json`, `banners.json`) + `node:fs` em build time |
 | **Persistência** | `localStorage` (carrinho) |
-| **Versão Astro** | [Astro](https://astro.build) v4 (geração de site estático) + TypeScript na camada de dados |
 | **Integrações** | WhatsApp API (`wa.me`), links externos (Mercado Livre, Magalu, Shopee) |
 | **Controle de versão** | Git / GitHub (hospedagem via GitHub Pages) |
 
@@ -74,79 +79,46 @@ catalogo/
 
 ## 🚀 Como rodar
 
-### Versão estática (a mais simples)
-
-Basta abrir o `index.html` no navegador, ou servir a pasta com qualquer servidor estático:
+Pré-requisito: [Node.js](https://nodejs.org) (16+).
 
 ```bash
-# na raiz do catálogo
-python3 -m http.server 8000
-# depois acesse http://localhost:8000
-```
-
-> ⚠️ Por causa do `fetch()` do JSON, recomenda-se abrir via servidor (ou hospedar), e não direto com `file://`.
-
-### Versão Astro
-
-```bash
-cd astro
 npm install        # instala as dependências
 npm run dev        # ambiente de desenvolvimento em http://localhost:4321
-npm run build      # gera o site estático em astro/dist/
-npm run preview    # pré-visualiza o build
+npm run build      # gera o site estático em dist/
+npm run preview    # pré-visualiza o build em produção
 ```
 
 ---
 
 ## 📤 Como subir para o GitHub
 
-1. **Crie o repositório** no GitHub (ex.: `palhacaria-catalogo`).
-2. **Inicialize o Git** na raiz do projeto:
+Este repositório já está configurado com Git e apontando para o remoto `catalogo-palhacaria`. Para clonar e publicar:
 
 ```bash
-cd caminho/para/catalogo
-git init
-git add .
-git commit -m "feat: catálogo Palhaçaria & Cia"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/palhacaria-catalogo.git
-git push -u origin main
-```
-
-3. **Habilite o GitHub Pages** (Settings → Pages → *Deploy from a branch* → `main` / `master` / `/root` ou `/docs`).
-
-> Para a versão estática, o GitHub Pages servirá o `index.html` raiz direto — sem build.
-
-### Opção com Git LFS (recomendado para as imagens)
-
-O repositório contém muitas imagens `.webp`/`.png`. Se preferir não "inchar" o histórico, use [Git LFS](https://git-lfs.com):
-
-```bash
-git lfs install
-git lfs track "*.webp" "*.png" "*.jpg"
-git add .gitattributes
-git commit -m "chore: rastrear imagens com Git LFS"
-```
-
-### Publicando a versão Astro no GitHub Pages
-
-```bash
-cd astro
+# clonar
+git clone https://github.com/KastyYasz/catalogo-palhacaria.git
+cd catalogo-palhacaria
 npm install
-# Astro gera o site em dist/ (ajuste se usar subpasta do projeto)
-npm run build
+
+# ... depois de alguma mudança ...
+git add .
+git commit -m "descrição da mudança"
+git push origin main
 ```
 
-Depois aponte o GitHub Pages para a pasta `astro/dist` (ou configure um workflow de CI para buildar automaticamente).
+### Publicando no GitHub Pages
+
+1. Rode o build: `npm run build` → gera `dist/`.
+2. Em **Settings → Pages**, aponte o deploy para a branch/pasta correta, ou use um workflow de CI que rode `astro build` e publique `dist/`.
 
 ---
 
 ## 🔧 Como personalizar
 
-- **Produtos** → edite `produtos.json` (campos: `id`, `nome`, `categoria`, `subcategoria`, `tipo`, `preco`, `imagem`, `descricao`, `tamanhos[]`, `cores[]`).
-- **Banners** → edite `banners.json` (id, intervalo e imagens do carrossel).
-- **WhatsApp / Marketplaces / redes** → procure os links em `script.js` (constante `LOJAS_EXTERNAS` e `wa.me`) e no próprio `index.html`.
-- **Identidade visual** → as cores e fontes ficam centralizadas nas variáveis `:root` do `style.css`.
+- **Produtos** → edite `src/data/produtos.json` (campos: `id`, `nome`, `categoria`, `subcategoria`, `tipo`, `preco`, `imagem`, `descricao`, `tamanhos[]`, `cores[]`). Depois rode `npm run build`.
+- **Banners** → edite `src/data/banners.json` (id, intervalo e imagens do carrossel).
+- **WhatsApp / Marketplaces / redes** → procure os links em `src/data/produtos.ts` (lista `lojas`) e nos componentes `Footer.astro` / `Cart.astro` (`wa.me`).
+- **Identidade visual** → as cores e fontes ficam centralizadas nas variáveis `:root` do `public/style.css`.
 
 ---
 
@@ -160,7 +132,7 @@ Depois aponte o GitHub Pages para a pasta `astro/dist` (ou configure um workflow
 
 ## 📄 Licença
 
-Este repositório é de uso privado/comercial da loja Palhaçaria & Cia. Os dados de produtos, imagens e identidade visual são de propriedade da loja.
+MIT — veja o arquivo [`LICENSE`](./LICENSE).
 
 ---
 
