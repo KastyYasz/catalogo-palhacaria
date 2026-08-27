@@ -1,11 +1,11 @@
-// Camada de dados: lê os JSON do catálogo em BUILD TIME, com tipagem.
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+// Camada de dados: os JSONs são importados diretamente (em vez de ler via
+// fs em runtime). O Vite/Astro resolve e embute o conteúdo em build time,
+// então os dados ficam disponíveis tanto no pré-render (HTML estático)
+// quanto no `window.__PRODUTOS__` injetado na página.
+import produtosJson from './produtos.json';
+import bannersJson from './banners.json';
 
-// Os JSONs ficam nesta mesma pasta (src/data), tornando o projeto autocontido.
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
+// ── Tipos ────────────────────────────────────
 export interface Cor {
   nome: string;
   hex: string;
@@ -24,13 +24,6 @@ export interface Produto {
   cores?: Cor[];
 }
 
-export interface Loja {
-  nome: string;
-  icon: string;
-  height: string;
-  url: string;
-}
-
 export interface BannerImagem {
   src: string;
   alt: string;
@@ -42,13 +35,16 @@ export interface Banner {
   imagens: BannerImagem[];
 }
 
-export const produtos: Produto[] = JSON.parse(
-  readFileSync(resolve(__dirname, 'produtos.json'), 'utf-8')
-);
+export interface Loja {
+  nome: string;
+  icon: string;
+  height: string;
+  url: string;
+}
 
-export const banners: Banner[] = JSON.parse(
-  readFileSync(resolve(__dirname, 'banners.json'), 'utf-8')
-);
+// ── Dados ────────────────────────────────────
+export const produtos: Produto[] = produtosJson;
+export const banners: Banner[] = bannersJson;
 
 // Lojas externas (mantém os links reais do rodapé).
 export const lojas: Loja[] = [
@@ -72,7 +68,7 @@ export const lojas: Loja[] = [
   },
 ];
 
-// Helpers reaproveitados do script original.
+// ── Helpers ──────────────────────────────────
 export function normalizarCss(str: string): string {
   return str
     .normalize('NFD')
