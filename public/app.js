@@ -14,6 +14,7 @@ const todosProdutos = window.__PRODUTOS__ || [];
 
 // ─── Estado ───────────────────────────────────
 let filtroAtual = { categoria: '', subcategoria: '', tipo: '' };
+let termoBusca = '';
 
 // Estado do modal
 let produtoModalAtual = null;
@@ -27,6 +28,8 @@ const selCat = document.getElementById('filtro-categoria');
 const selSub = document.getElementById('filtro-subcategoria');
 const selTipo = document.getElementById('filtro-tipo');
 const btnLimpar = document.getElementById('btn-limpar-filtros');
+const inputBusca = document.getElementById('busca-produtos');
+const btnLimparBusca = document.getElementById('btn-limpar-busca');
 
 const contador = document.getElementById('contador-carrinho');
 const overlay = document.getElementById('overlay');
@@ -71,6 +74,14 @@ function normalizarCss(str) {
     .replace(/\s+/g, '-')
     .toLowerCase();
 }
+// Versão "limpa" p/ busca: minúscula e sem acentos (para casar "mascara" com "máscara")
+function normalizarBusca(str) {
+  return String(str || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim();
+}
 function valoresUnicos(lista) {
   return [...new Set(lista.filter((v) => v !== null && v !== undefined && v !== ''))].sort();
 }
@@ -103,19 +114,34 @@ function adicionarOpcoes(select, valores, placeholder) {
 }
 
 function renderizarProdutos() {
-  const filtrados = todosProdutos.filter(
-    (p) =>
+  const termo = normalizarBusca(termoBusca);
+  const camposBusca = termo.split(/\s+/g).filter(Boolean);
+
+  const filtrados = todosProdutos.filter((p) => {
+    const passouFiltros =
       (!filtroAtual.categoria || p.categoria === filtroAtual.categoria) &&
       (!filtroAtual.subcategoria || p.subcategoria === filtroAtual.subcategoria) &&
-      (!filtroAtual.tipo || p.tipo === filtroAtual.tipo)
-  );
+      (!filtroAtual.tipo || p.tipo === filtroAtual.tipo);
+    if (!passouFiltros) return false;
 
-  infEl.textContent = `${filtrados.length} produto${
+    if (camposBusca.length === 0) return true;
+    // "alvo" = nome + categoria + subcategoria + tipo, tudo sem acento/caixa
+    const alvo = normalizarBusca(
+      `${p.nome} ${p.categoria} ${p.subcategoria || ''} ${p.tipo || ''}`
+    );
+    return camposBusca.every((palavra) => alvo.includes(palavra));
+  });
+
+  let info = `${filtrados.length} produto${
     filtrados.length !== 1 ? 's' : ''
   } encontrado${filtrados.length !== 1 ? 's' : ''}`;
+  if (termo) info += ` para “${escapeHtml(termoBusca.trim())}”`;
+  infEl.innerHTML = info;
 
   if (filtrados.length === 0) {
-    gradeEl.innerHTML = `<div class="vazio"><div class="emoji">🎭</div><p>Nenhum produto encontrado com esses filtros.</p></div>`;
+    gradeEl.innerHTML = `<div class="vazio"><div class="emoji">🔎</div><p>Nenhum produto encontrado${
+      termo ? ` para “${escapeHtml(termoBusca.trim())}”` : ''
+    }.</p><p style="margin-top:10px;font-weight:600;font-size:.9rem">Tente outra palavra ou limpe os filtros.</p></div>`;
     return;
   }
 
@@ -160,6 +186,17 @@ function limparFiltros() {
   selCat.value = '';
   selSub.value = '';
   selTipo.value = '';
+  limparBusca();
+}
+
+function atualizarBotaoBusca() {
+  btnLimparBusca.classList.toggle('visivel', inputBusca.value.trim().length > 0);
+}
+
+function limparBusca() {
+  termoBusca = '';
+  inputBusca.value = '';
+  atualizarBotaoBusca();
   renderizarProdutos();
 }
 
@@ -478,6 +515,7 @@ function init() {
   popularFiltros();
   renderizarProdutos();
   atualizarCarrinhoUI();
+  atualizarBotaoBusca();
   iniciarCarrossel();
 
   selCat.addEventListener('change', (e) => {
@@ -493,6 +531,18 @@ function init() {
     renderizarProdutos();
   });
   btnLimpar.addEventListener('click', limparFiltros);
+
+  // Busca por texto (case/accent-insensitive, combinada com os selects)
+  inputBusca.addEventListener('input', (e) => {
+    termoBusca = e.target.value;
+    atualizarBotaoBusca();
+    renderizarProdutos();
+  });
+  btnLimparBusca.addEventListener('click', limparBusca);
+  // "x" nativo do input type=search também limpa
+  inputBusca.addEventListener('search', (e) => {
+    if (e.target.value === '') limparBusca();
+  });
 
   // Links de categoria no rodapé
   document
